@@ -9,7 +9,7 @@ namespace Engine.Factories
 {
     public static class ItemFactory
     {
-        private static List<GameItem> _standardGameItems;
+        private static readonly List<GameItem> _standardGameItems = new List<GameItem>();
 
         static ItemFactory()
         {
@@ -31,6 +31,11 @@ namespace Engine.Factories
 
             if (standardItem != null)
             {
+                if (standardItem is Weapon)
+                {
+                    return (standardItem as Weapon).Clone();
+                }
+
                 return standardItem.Clone();
             }
 

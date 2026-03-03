@@ -22,7 +22,7 @@ namespace WPFUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GameSession _gameSession;
+        private readonly GameSession _gameSession = new GameSession();
         public MainWindow()
         {
             InitializeComponent();
@@ -51,6 +51,11 @@ namespace WPFUI
         private void OnClick_MoveSouth(object sender, RoutedEventArgs e)
         {
             _gameSession.MoveSouth();
+        }
+
+        private void OnClick_AttackMonster(object sender, RoutedEventArgs e)
+        {
+            _gameSession.AttackCurrentMonster();
         }
 
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
