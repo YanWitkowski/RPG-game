@@ -169,7 +169,7 @@
             <TabControl x:Name="PlayerDataTabControl">
                 <TabItem Header="Inventory"
                          x:Name="InventoryTabItem">
-                    <DataGrid ItemsSource="{Binding CurrentPlayer.GroupedInventory}"
+                    <DataGrid ItemsSource="{Binding CurrentPlayer.Inventory.GroupedInventory}"
                               AutoGenerateColumns="False"
                               HeadersVisibility="Column">
                         <DataGrid.Columns>
@@ -194,8 +194,15 @@
                               HeadersVisibility="Column">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name"
-                                                Binding="{Binding PlayerQuest.Name, Mode=OneWay}"
-                                                Width="*"/>
+                                Binding="{Binding PlayerQuest.Name, Mode=OneWay}"
+                                Width="*">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="ToolTip"
+                                Value="{Binding PlayerQuest.ToolTipContents}"/>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Done?"
                                                 Binding="{Binding IsCompleted, Mode=OneWay}"
                                                 Width="Auto"/>
@@ -204,14 +211,21 @@
                 </TabItem>
 
                 <TabItem Header="Recipes"
-                         x:Name="RecipesTabItem">
+         x:Name="RecipesTabItem">
                     <DataGrid ItemsSource="{Binding CurrentPlayer.Recipes}"
               AutoGenerateColumns="False"
               HeadersVisibility="Column">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name"
                                 Binding="{Binding Name, Mode=OneWay}"
-                                Width="*"/>
+                                Width="*">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="ToolTip"
+                                Value="{Binding ToolTipContents}"/>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                             <DataGridTemplateColumn MinWidth="75">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -295,7 +309,7 @@
 
                 <ComboBox Grid.Row="0" Grid.Column="0"
               Visibility="{Binding HasMonster, Converter={StaticResource BooleanToVisibility}}"
-              ItemsSource="{Binding CurrentPlayer.Weapons}"
+              ItemsSource="{Binding CurrentPlayer.Inventory.Weapons}"
               SelectedItem="{Binding CurrentPlayer.CurrentWeapon}"
               DisplayMemberPath="Name"/>
 
@@ -305,13 +319,13 @@
             Click="OnClick_AttackMonster"/>
 
                 <ComboBox Grid.Row="1" Grid.Column="0"
-              Visibility="{Binding CurrentPlayer.HasConsumable, Converter={StaticResource BooleanToVisibility}}"
-              ItemsSource="{Binding CurrentPlayer.Consumables}"
+              Visibility="{Binding CurrentPlayer.Inventory.HasConsumable, Converter={StaticResource BooleanToVisibility}}"
+              ItemsSource="{Binding CurrentPlayer.Inventory.Consumables}"
               SelectedItem="{Binding CurrentPlayer.CurrentConsumable}"
               DisplayMemberPath="Name"/>
 
                 <Button Grid.Row="1" Grid.Column="2"
-            Visibility="{Binding CurrentPlayer.HasConsumable, Converter={StaticResource BooleanToVisibility}}"
+            Visibility="{Binding CurrentPlayer.Inventory.HasConsumable, Converter={StaticResource BooleanToVisibility}}"
             Content="Use"
             Click="OnClick_UseCurrentConsumable"/>
             </Grid>
