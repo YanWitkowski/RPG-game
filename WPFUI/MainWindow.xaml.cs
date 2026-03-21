@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Engine.Services;
 
 namespace WPFUI
 {
@@ -23,6 +24,7 @@ namespace WPFUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
         private readonly GameSession _gameSession = new GameSession();
         private readonly Dictionary<Key, Action> _userInputActions =
             new Dictionary<Key, Action>();
@@ -31,8 +33,7 @@ namespace WPFUI
             InitializeComponent();
             InitializeUserInputActions();
 
-            _gameSession = new GameSession();
-            _gameSession.OnMessageRaised += OnGameMessageRaised;
+            _messageBroker.OnMessageRaised += OnGameMessageRaised;
 
             DataContext = _gameSession;
         }
