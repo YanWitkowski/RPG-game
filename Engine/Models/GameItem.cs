@@ -1,4 +1,5 @@
 ﻿using Engine.Actions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,16 @@ namespace Engine.Models
             Consumable
         }
 
+        [JsonIgnore]
         public ItemCategory Category { get; }
         public int ItemTypeID { get; }
+        [JsonIgnore]
         public string Name { get; }
+        [JsonIgnore]
         public int Price { get; }
+        [JsonIgnore]
         public bool IsUnique { get; }
+        [JsonIgnore]
         public IAction Action { get; set; }
 
         public GameItem(ItemCategory category, int itemTypeID, string name, int price, bool isUnique = false,

@@ -1,4 +1,5 @@
 ﻿using Engine.Factories;
+using Engine.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -51,7 +52,7 @@ namespace Engine.Models
                 newMonster.AddItemToLootTable(itemPercentage.ID, itemPercentage.Percentage);
 
                 // Populate the new monster's inventory, using the loot table
-                if (RandomNumberGenerator.NumberBetween(1, 100) <= itemPercentage.Percentage)
+                if (DiceService.Instance.Roll(100).Value <= itemPercentage.Percentage)
                 {
                     newMonster.AddItemToInventory(ItemFactory.CreateGameItem(itemPercentage.ID));
                 }
