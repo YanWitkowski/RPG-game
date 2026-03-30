@@ -1,54 +1,45 @@
-﻿using Engine.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Engine
+namespace Engine.Models
 {
     public class Player : LivingEntity
     {
         #region Properties
 
-        private string _characterClass;
         private int _experiencePoints;
 
-        public string CharacterClass
+        public int ExperiencePoints
         {
-            get => _characterClass;
-            set
-            {
-                _characterClass = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int ExperiencePoints {
             get => _experiencePoints;
-            private set 
-            { _experiencePoints = value;
+            private set
+            {
+                _experiencePoints = value;
+
                 OnPropertyChanged();
+
                 SetLevelAndMaximumHitPoints();
             }
         }
 
-        public ObservableCollection<QuestStatus> Quests { get; }
-        public ObservableCollection<Recipe> Recipes { get; }
+        public ObservableCollection<QuestStatus> Quests { get; } =
+            new ObservableCollection<QuestStatus>();
+
+        public ObservableCollection<Recipe> Recipes { get; } =
+            new ObservableCollection<Recipe>();
 
         #endregion
-        public event EventHandler OnLeveledUp;
-        public Player(string name, string characterClass, int experiencePoints,
-                      int maximumHitPoints, int currentHitPoints, int dexterity, int gold) :
-            base(name, maximumHitPoints, currentHitPoints, dexterity, gold)
-        {
-            CharacterClass = characterClass;
-            ExperiencePoints = experiencePoints;
 
-            Quests = new ObservableCollection<QuestStatus>();
-            Recipes = new ObservableCollection<Recipe>();
+        public event EventHandler OnLeveledUp;
+
+        public Player(string name, int experiencePoints,
+                      int maximumHitPoints, int currentHitPoints,
+                      IEnumerable<PlayerAttribute> attributes, int gold) :
+            base(name, maximumHitPoints, currentHitPoints, attributes, gold)
+        {
+            ExperiencePoints = experiencePoints;
         }
 
         public void AddExperience(int experiencePoints)

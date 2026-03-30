@@ -1,47 +1,36 @@
-﻿using Engine.EventArgs;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
+using Engine.EventArgs;
 using Engine.Models;
 using Engine.Services;
 using Engine.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using TestEngine.Services;
 using Microsoft.Win32;
 using WPFUI.Windows;
 
 namespace WPFUI
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private const string SAVE_GAME_FILE_EXTENSION = "rpg";
+        private const string SAVE_GAME_FILE_EXTENSION = "soscsrpg";
 
         private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
         private readonly Dictionary<Key, Action> _userInputActions =
             new Dictionary<Key, Action>();
 
         private GameSession _gameSession;
-        public MainWindow()
+
+        public MainWindow(Player player, int xLocation = 0, int yLocation = 0)
         {
             InitializeComponent();
 
             InitializeUserInputActions();
 
-            SetActiveGameSessionTo(new GameSession());
+            SetActiveGameSessionTo(new GameSession(player, xLocation, yLocation));
         }
 
         private void OnClick_MoveNorth(object sender, RoutedEventArgs e)
@@ -133,6 +122,7 @@ namespace WPFUI
                 }
             }
         }
+
         private void SetActiveGameSessionTo(GameSession gameSession)
         {
             // Unsubscribe from OnMessageRaised, or we will get double messages
@@ -149,22 +139,9 @@ namespace WPFUI
 
         private void StartNewGame_OnClick(object sender, RoutedEventArgs e)
         {
-            SetActiveGameSessionTo(new GameSession());
-        }
-
-        private void LoadGame_OnClick(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog =
-                new OpenFileDialog
-                {
-                    InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    Filter = $"Saved games (*.{SAVE_GAME_FILE_EXTENSION})|*.{SAVE_GAME_FILE_EXTENSION}"
-                };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                SetActiveGameSessionTo(SaveGameService.LoadLastSaveOrCreateNew(openFileDialog.FileName));
-            }
+            Startup startup = new Startup();
+            startup.Show();
+            Close();
         }
 
         private void SaveGame_OnClick(object sender, RoutedEventArgs e)
@@ -178,6 +155,11 @@ namespace WPFUI
         }
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+            AskToSaveGame();
+        }
+
+        private void AskToSaveGame()
         {
             YesNoWindow message =
                 new YesNoWindow("Save Game", "Do you want to save your game?");

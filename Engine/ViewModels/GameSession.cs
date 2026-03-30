@@ -1,10 +1,8 @@
-﻿using Engine.EventArgs;
+﻿using System.Linq;
 using Engine.Factories;
 using Engine.Models;
 using Engine.Services;
 using Newtonsoft.Json;
-using System;
-using System.Linq;
 
 namespace Engine.ViewModels
 {
@@ -14,6 +12,8 @@ namespace Engine.ViewModels
 
         #region Properties
 
+        private GameDetails _gameDetails;
+
         private Player _currentPlayer;
         private Location _currentLocation;
         private Battle _currentBattle;
@@ -21,8 +21,19 @@ namespace Engine.ViewModels
         private Trader _currentTrader;
 
         [JsonIgnore]
+        public GameDetails GameDetails
+        {
+            get => _gameDetails;
+            set
+            {
+                _gameDetails = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonIgnore]
         public World CurrentWorld { get; }
-        public string Version { get; } = "0.1.000";
+
         public Player CurrentPlayer
         {
             get => _currentPlayer;
@@ -129,30 +140,10 @@ namespace Engine.ViewModels
 
         #endregion
 
-        public GameSession()
-        {
-            int dexterity = DiceService.Instance.Roll(6, 3).Value;
-
-            CurrentPlayer = new Player("Scott", "Fighter", 0, 10, 10, dexterity, 1000000);
-
-            if (!CurrentPlayer.Inventory.Weapons.Any())
-            {
-                CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(1001));
-            }
-
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
-            CurrentPlayer.LearnRecipe(RecipeFactory.RecipeByID(1));
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(3001));
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(3002));
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(3003));
-
-            CurrentWorld = WorldFactory.CreateWorld();
-
-            CurrentLocation = CurrentWorld.LocationAt(0, 0);
-        }
-
         public GameSession(Player player, int xCoordinate, int yCoordinate)
         {
+            PopulateGameDetails();
+
             CurrentWorld = WorldFactory.CreateWorld();
             CurrentPlayer = player;
             CurrentLocation = CurrentWorld.LocationAt(xCoordinate, yCoordinate);
@@ -188,6 +179,11 @@ namespace Engine.ViewModels
             {
                 CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate);
             }
+        }
+
+        private void PopulateGameDetails()
+        {
+            GameDetails = GameDetailsService.ReadGameDetails();
         }
 
         private void CompleteQuestsAtLocation()
@@ -315,7 +311,7 @@ namespace Engine.ViewModels
             }
         }
 
-        private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
+        private void OnPlayerKilled(object sender, System.EventArgs e)
         {
             _messageBroker.RaiseMessage("");
             _messageBroker.RaiseMessage("You have been killed.");
@@ -326,6 +322,7 @@ namespace Engine.ViewModels
 
         private void OnCurrentMonsterKilled(object sender, System.EventArgs eventArgs)
         {
+            // Get another monster to fight
             CurrentMonster = CurrentLocation.GetMonster();
         }
 
